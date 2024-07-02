@@ -1,0 +1,280 @@
+OTP Verification System in Python
+Project Overview
+This project aims to develop an OTP (One-Time Password) verification system that generates a 6-digit OTP, sends it to the user's email address, and verifies the OTP entered by the user. The system includes error handling and user-friendly prompts to ensure a smooth user experience.
+
+Project Structure
+Generate OTP
+Send OTP via Email
+User Input for OTP
+Verify OTP
+Implementation
+Step 1: Generate a 6-digit OTP
+python
+Copy code
+import random
+
+def generate_otp():
+    return random.randint(100000, 999999)
+Step 2: Send OTP via Email
+To simulate sending an email, we'll use the smtplib library. For actual deployment, you'd use a secure and authenticated SMTP server.
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+import random
+import smtplib
+from email.message import EmailMessage
+import gradio as gr
+
+# Function to generate a 6-digit OTP
+def generate_otp():
+    return ''.join([str(random.randint(0, 9)) for _ in range(6)])
+
+# Function to send the OTP via email
+def send_otp_via_email(otp, to_email):
+    from_email = 'vinaylakshman30@gmail.com'  # Replace with your email
+    email_password = 'vfwz zhhh kmbx qdvz'  # Replace with your app password
+    
+    msg = EmailMessage()
+    msg['Subject'] = 'OTP Verification'
+    msg['From'] = from_email
+    msg['To'] = to_email
+    msg.set_content(f"Your OTP is: {otp}")
+    
+    try:
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(from_email, email_password)
+        server.send_message(msg)
+        server.quit()
+        return "Email sent successfully."
+    except Exception as e:
+        return f"Failed to send email: {e}"
+
+# Function to verify the OTP with retry logic
+def otp_verification_system(to_email, input_otp):
+    global otp, attempts
+    if attempts == 0:
+        return "No more attempts left. Please request a new OTP."
+
+    if input_otp == otp:
+        return "OTP Verified"
+    else:
+        attempts -= 1
+        return f"Invalid OTP. You have {attempts} attempts left."
+
+def request_otp(to_email):
+    global otp, attempts
+    attempts = 3
+    otp = generate_otp()
+    return send_otp_via_email(otp, to_email)
+
+# Global variables to store OTP and attempts
+otp = ''
+attempts = 0
+
+with gr.Blocks() as demo:
+    with gr.Row():
+        with gr.Column():
+            email_input = gr.Textbox(label="Enter your email")
+            otp_button = gr.Button("Request OTP")
+            otp_status = gr.Textbox(label="OTP Status", interactive=False)
+        
+        with gr.Column():
+            otp_input = gr.Textbox(label="Enter OTP")
+            verify_button = gr.Button("Verify OTP")
+            verify_status = gr.Textbox(label="Verification Status", interactive=False)
+    
+    otp_button.click(request_otp, inputs=email_input, outputs=otp_status)
+    verify_button.click(otp_verification_system, inputs=[email_input, otp_input], outputs=verify_status)
+
+demo.launch()
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+Here's a structured PowerPoint presentation for your OTP verification system project. You can create a PowerPoint file using software like Microsoft PowerPoint, Google Slides, or any other presentation tool. Below are the slides' content and structure.
+
+Slide 1: Title Slide
+Title: OTP Verification System
+Subtitle: Capstone Project
+Presented by: [Your Name]
+Date: [Presentation Date]
+
+Slide 2: Introduction
+Title: Introduction
+Content:
+
+Purpose: To develop an OTP (One-Time Password) verification system in Python.
+Objective: Generate a 6-digit OTP, send it via email, and verify user input.
+Slide 3: Project Requirements
+Title: Project Requirements
+Content:
+
+Generate a 6-digit OTP randomly.
+Send the OTP to the user's email address.
+Prompt the user to enter the OTP.
+Verify if the entered OTP matches the generated OTP.
+Implement error handling and user-friendly prompts.
+Allow the user to retry OTP entry in case of incorrect input.
+Slide 4: Tools and Libraries
+Title: Tools and Libraries
+Content:
+
+Python: Main programming language.
+smtplib: To send emails.
+gradio: To create an interactive UI.
+random: To generate random OTPs.
+email.message: To format the email content.
+Slide 5: OTP Generation
+Title: OTP Generation
+Content:
+
+Function: generate_otp()
+Description: Generates a random 6-digit OTP using the random module.
+Code Snippet:
+python
+Copy code
+def generate_otp():
+    return ''.join([str(random.randint(0, 9)) for _ in range(6)])
+Slide 6: Sending OTP via Email
+Title: Sending OTP via Email
+Content:
+
+Function: send_otp_via_email(otp, to_email)
+Description: Sends the OTP to the specified email using smtplib.
+Code Snippet:
+python
+Copy code
+def send_otp_via_email(otp, to_email):
+    from_email = 'vinaylakshman30@gmail.com'
+    email_password = 'vfwz zhhh kmbx qdvz'
+    
+    msg = EmailMessage()
+    msg['Subject'] = 'OTP Verification'
+    msg['From'] = from_email
+    msg['To'] = to_email
+    msg.set_content(f"Your OTP is: {otp}")
+    
+    try:
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(from_email, email_password)
+        server.send_message(msg)
+        server.quit()
+        return "Email sent successfully."
+    except Exception as e:
+        return f"Failed to send email: {e}"
+Slide 7: Verifying the OTP
+Title: Verifying the OTP
+Content:
+
+Function: otp_verification_system(to_email, input_otp)
+Description: Verifies the OTP entered by the user.
+Code Snippet:
+python
+Copy code
+def otp_verification_system(to_email, input_otp):
+    global otp, attempts
+    if attempts == 0:
+        return "No more attempts left. Please request a new OTP."
+
+    if input_otp == otp:
+        return "OTP Verified"
+    else:
+        attempts -= 1
+        return f"Invalid OTP. You have {attempts} attempts left."
+Slide 8: Requesting a New OTP
+Title: Requesting a New OTP
+Content:
+
+Function: request_otp(to_email)
+Description: Requests a new OTP and sends it to the specified email, resetting attempts to 3.
+Code Snippet:
+python
+Copy code
+def request_otp(to_email):
+    global otp, attempts
+    attempts = 3
+    otp = generate_otp()
+    return send_otp_via_email(otp, to_email)
+Slide 9: Gradio Interface
+Title: Gradio Interface
+Content:
+
+Description: Creating a user-friendly interface using gradio.
+Code Snippet:
+python
+Copy code
+with gr.Blocks() as demo:
+    with gr.Row():
+        with gr.Column():
+            email_input = gr.Textbox(label="Enter your email")
+            otp_button = gr.Button("Request OTP")
+            otp_status = gr.Textbox(label="OTP Status", interactive=False)
+        
+        with gr.Column():
+            otp_input = gr.Textbox(label="Enter OTP")
+            verify_button = gr.Button("Verify OTP")
+            verify_status = gr.Textbox(label="Verification Status", interactive=False)
+    
+    otp_button.click(request_otp, inputs=email_input, outputs=otp_status)
+    verify_button.click(otp_verification_system, inputs=[email_input, otp_input], outputs=verify_status)
+
+demo.launch()
+Slide 10: Demonstration
+Title: Demonstration
+Content:
+
+Live Demo: Show a live demo of the OTP verification system using the Gradio interface.
+Slide 11: Conclusion
+Title: Conclusion
+Content:
+
+Summary: Successfully implemented an OTP verification system using Python, smtplib, and Gradio.
+Features: Secure OTP generation, email sending, user-friendly interface, and retry mechanism.
+Slide 12: Questions
+Title: Questions
+Content:
+
+Prompt: Open the floor for any questions from the audience.
+Notes:
+Customize the email credentials (from_email and email_password) with your actual credentials in the script.
+Make sure to test the system beforehand to ensure smooth execution during the live demo.
+Practice the presentation to manage time and ensure clarity.
+You can copy the above content into PowerPoint slides, format them appropriately, and add visuals like screenshots of the code and Gradio interface for better understanding.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
